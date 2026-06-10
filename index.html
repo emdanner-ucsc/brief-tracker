@@ -31,6 +31,16 @@
   dl dd { margin:2px 0 0 0; color:var(--muted); }
   .examples li { margin-bottom:6px; }
   .pipeline { background:#eef6ee; border:1px solid #cfe3cf; border-radius:6px; padding:12px 16px; font-size:14px; }
+  .timeline td.when { white-space:nowrap; font-weight:bold; color:var(--accent); }
+  .timeline td.phase { font-weight:bold; }
+  .timeline ul { margin:0; padding-left:18px; }
+  .timeline li { margin-bottom:3px; }
+  .timeline tr.past td { color:var(--muted); background:#f6f7f8; }
+  .timeline tr.past td.when::after { content:" ✓"; }
+  .timeline tr.now td { background:#fff8e6; border-top:2px solid #d98e2b; border-bottom:2px solid #d98e2b; }
+  .timeline tr.now td.phase::after { content:" — this week"; color:#d98e2b; }
+  .risks dt { font-weight:bold; margin-top:14px; }
+  .risks dd { margin:6px 0 0 0; color:var(--muted); }
   footer { color:var(--muted); font-size:13px; border-top:1px solid var(--line); padding-top:12px; margin-top:12px; }
   .intro { color:var(--muted); max-width:70ch; }
 </style>
@@ -55,6 +65,12 @@
     <div class="card"><div class="num">9</div><div class="lbl">sectors</div></div>
     <div class="card"><div class="num">323</div><div class="lbl">locations</div></div>
   </div>
+</section>
+
+<section>
+  <h2>Timeline to August 1</h2>
+  <p class="intro">All briefs completed, verified, and packaged for upload to the main COEQWAL site by August 1, 2026. <strong id="countdown"></strong></p>
+  <table class="timeline"><thead><tr><th>When</th><th>Phase</th><th>What happens</th></tr></thead><tbody><tr data-start="2026-06-09" data-end="2026-06-13"><td class="when">Jun 9–13</td><td class="phase">Decisions week</td><td><ul><li>Close out team review of the Folsom and BASELINES briefs.</li><li>Confirm the per-location format for the 323 location briefs (the inventory&#x27;s biggest open question).</li><li>Set the delivery date for real figure data from the MATLAB pipeline (replaces the synthetic values).</li><li>Agree the August 1 handoff format with the website team — what files, delivered how.</li></ul></td></tr><tr data-start="2026-06-15" data-end="2026-06-26"><td class="when">Jun 15–26</td><td class="phase">Drafting the hand-written briefs</td><td><ul><li>Draft the four theme briefs from the workshop source documents.</li><li>Draft the two hydroclimate background briefs (HC1, HC2).</li><li>Finish the strategy-background template (from the s0029 prototype) and draft the 24 strategy backgrounds.</li><li>Apply copy-deck wording fixes to Folsom and BASELINES from the review round.</li></ul></td></tr><tr data-start="2026-06-29" data-end="2026-07-10"><td class="when">Jun 29 – Jul 10</td><td class="phase">Templates locked, builder extended, real data in</td><td><ul><li>Lock wording for every brief class via copy-deck rounds.</li><li>Extend the builder from location briefs to the scenario and sector classes.</li><li>Real figure data replaces synthetic everywhere — needed by July 6 to protect the build week.</li><li>Trial build of each class from live data.</li></ul></td></tr><tr data-start="2026-07-13" data-end="2026-07-17"><td class="when">Jul 13–17</td><td class="phase">First full-library build and review</td><td><ul><li>Generate all ~387 briefs from real data; run the automated number-by-number verification.</li><li>Team review window: the curated briefs in full, plus samples of every generated class.</li></ul></td></tr><tr data-start="2026-07-20" data-end="2026-07-24"><td class="when">Jul 20–24</td><td class="phase">Fix round and final build</td><td><ul><li>Apply review fixes; regenerate the full library; re-verify.</li><li>Produce the PDF version of every brief.</li></ul></td></tr><tr data-start="2026-07-27" data-end="2026-07-31"><td class="when">Jul 27–31</td><td class="phase">Freeze and handoff</td><td><ul><li>Content freeze July 29 — only outright errors fixed after that.</li><li>Final spot checks; assemble the handoff package (files plus a manifest) for the website team.</li></ul></td></tr><tr data-start="2026-08-01" data-end="2026-08-01"><td class="when">Aug 1</td><td class="phase">Done — ready for upload</td><td><ul><li>Full brief library delivered to the website team for upload to the main COEQWAL site.</li></ul></td></tr></tbody></table><dl class="risks"><dt>Watch items</dt><dd>Real figure data is the critical dependency: every July phase assumes it has arrived. If it slips past July 6, the build week slips with it.</dd><dd>The 323 location briefs are all-or-nothing through the builder — the risk is not writing time but verification and review time. The sample-based review in mid-July is what makes the volume manageable.</dd><dd>The handoff format conversation with the website team should happen in June, not July — discovering a format mismatch during freeze week is the avoidable failure.</dd></dl>
 </section>
 
 <section>
@@ -93,5 +109,21 @@
   by <code>build_tracker.py</code>. To update: edit those two files and re-run the script.
 </footer>
 </main>
+<script>
+// Runs when the page is viewed, so the highlight stays correct between rebuilds:
+// finished phases get a check mark, the phase containing today is highlighted,
+// and the countdown shows days remaining to August 1.
+(function () {
+  var today = new Date().toISOString().slice(0, 10);
+  document.querySelectorAll(".timeline tbody tr").forEach(function (tr) {
+    if (tr.dataset.end < today) tr.classList.add("past");
+    else if (tr.dataset.start <= today) tr.classList.add("now");
+  });
+  var days = Math.ceil((new Date("2026-08-01") - new Date(today)) / 86400000);
+  var el = document.getElementById("countdown");
+  if (el) el.textContent = days > 0 ? days + " days remain." :
+                           (days === 0 ? "Today is the day." : "");
+})();
+</script>
 </body>
 </html>
